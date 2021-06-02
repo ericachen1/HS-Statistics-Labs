@@ -1,0 +1,149 @@
+---
+title: 'Lab 4: Connecting Hypothesis Testing and Confidence Intervals'
+author: "Erica Chen"
+date: "June 2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+<!-- WARNING: This file must be in the same folder with the data and source code to work. DO NOT MODIFY THE CODE CHUNK BELOW OR CHANGE ANY FILENAMES-->
+
+```{r, echo=FALSE, message=FALSE}
+
+#Import the data
+spring_2020_lab_4_data <- read.csv("spring_2020_lab_4_data.csv", header = T)
+#Attach the data
+attach(spring_2020_lab_4_data)
+```
+
+In this lab, we will be analyzing the studying and sleep habits of university students at College X, and how it associates to students’ GPA. 
+
+------
+
+#### 1) GPA at College X
+
+Does this sample provide evidence that the average GPA at College X is above 3.1?
+
+```{r}
+
+summary(GPA)
+hist(GPA)
+boxplot(GPA, main = "Student GPA at College X", ylab = "GPA")
+
+```
+
+The sample shows that the average GPA for students at College X is above 3.1. The summary calculates a mean of 3.244. The summary of GPA at College X also shows the median is slightly larger than the mean (3.300 > 3.244) telling us that the distribution will be moderately skewed to the left, as shown in the histogram. 
+
+We have been given two values about the average GPA of students at College X. To test both these hypotheses, we will run a one sided single mean test to measure if the overall student population at College X has a grade point average above 3.1.
+
+The null hypothesis is that the average GPA is equal to 3.1, where H_O: μ = 3.1. The alternative hypothesis is that the average GPA will be greater than 3.1, where H_A: μ > 3.1.
+
+```{r}
+
+t.test(GPA, mu=3.1, alternative="greater")
+
+```
+
+The one sided p-value of 2.082e-08 is less than 0.05%. We can  reject the null hypothesis and conclude that the average GPA at College X is greater than 3.1. 
+
+```{r}
+
+t.test(GPA, mu=3.1)
+
+```
+
+We are 95% confident that the average GPA of students at College X is between 3.19 and 3.29. College X students have GPAs between 3.19 and 3.29. Moreover, the mean GPA of 3.1 is out of bounds of the interval, so we can conclude that this mean is not a plausible value. 
+
+------
+
+### 2) Gender Under High Stress
+
+Does this sample provide evidence of a significant difference between the proportions of male and female students who are under high stress?
+
+```{r}
+
+females.stress <- subset (Stress, Gender == "Female")
+View(females.stress)
+summary(females.stress)
+
+```
+
+The data above compares the proportion of females that recorded high and normal stress levels. 38/151 (or 25% of the female population) report high stress. 
+
+```{r}
+males.stress <- subset (Stress, Gender == "Male")
+
+View(males.stress)
+summary(males.stress)
+
+```
+
+
+The data above compares the proportion of females that recorded high and normal stress levels. 18/102 (or 18% of the male population) report high stress. 
+
+```{r}
+
+plot(table(Gender,Stress), main = "Male and Female Stress Level")
+
+```
+
+The graph above shows a visual difference between the two proportions. To test both these hypotheses, we will run a two proportion test to measure if there is a difference in stress scores between the two genders. 
+
+The null hypothesis is that there is no difference in the stress score between male and female students, where H_O: p_F = p_M. The alternative hypothesis is that there is a difference in the stress score of male and female students, where H_A: p_F ≠ p_M.
+```{r}
+
+prop.test(table(Stress,Gender))
+```
+The p-value of 0.21 is significantly less than 0.05%. We are able to reject the null hypothesis to favor the alternative stating that there is a difference in proportion between females and males with high stress. 
+
+We are 95% confident that the difference in the proportion of the average high-stress female and high-stress male students at College X is between -0.047 and 0.26. There is a -0.047 and 0.26 difference in the proportion of females and males who are stressed. 
+
+------
+
+### 3) GPA and Stress
+
+Does this sample provide evidence of a significant difference between the average GPA of “normal stress” students and the average GPA of “high stress” students at this college?
+
+```{r}
+
+normal.gpa <- subset (GPA, Stress == "normal")
+View(normal.gpa)
+summary(normal.gpa)
+hist(normal.gpa, main ="Students With Normal Stress", xlab = "Grade Point Average")
+boxplot(normal.gpa, main ="Students With Normal Stress", ylab = "Grade Point Average")
+```
+
+Students at College X reporting normal stress level averages a GPA of 3.21. The median is slightly greater than the mean, and the histogram displays a left-skewed unimodal distribution. 
+
+```{r}
+
+high.gpa <- subset (GPA, Stress == "high")
+View(high.gpa)
+summary(high.gpa)
+hist(high.gpa, main ="Students With High Stress", xlab = "Grade Point Average")
+boxplot(high.gpa, main ="Students With High Stress", ylab = "Grade Point Average")
+```
+
+Students reporting a severe anxiety status average a GPA of 3.37, as well, but the smaller medium: 3.25. However, there are a lot fewer students (less than 30)  reporting a severe anxiety status. The histogram displays a greater frequency of students with severe anxiety maintaining a 3.0 - 4.0 GPA. 
+
+To test if there is a significant difference between the average GPA of “normal stress” students and the average GPA of “high stress” students at College X, we will run a two mean test.
+
+The null hypothesis is that there is no difference in the average GPA of high stress and normal stress students, where H_O: μ_F = μ_M. The alternative hypothesis is that there is a difference in the GPA of high stress and normal stress students, where H_A: μ_F ≠ μ_M.
+
+```{r}
+
+t.test(GPA~Stress, mu=0)
+
+``` 
+
+The p-value of 0.0055 is significantly less than 0.05, which is enough to reject the null hypothesis. We can conclude that there is a difference between the GPA of students with high stress and normal stress.
+
+We are 95% confident that the difference between the average GPA of normal stress students and the average GPA of high-stress students at College X is between 0.047 and 0.27. There is a 0.047 and 0.27 difference in GPA between high stress and low-stress students.
+
+------
+
+### 4) Conclusions
+
+In this lab, we compared the habits of university students at College X and how it impacted their GPA. I read a statistic that the average GPA for students at four year colleges in the U.S. is around 3.15. And this number is even lower for engineering and math majors. At first glance of the data, I noticed College X’s average GPA of 3.2 was above this average. I think this was an interesting characteristic to note about College X. The data gathered in this lab supports that there is no strong correlation between students under high stress and maintaining a higher GPA, but the data does show that the average student under high stress had a GPA greater than the total population of students at College X: an additional 0.122 grade point difference. With this small faction, we can assume that this small difference in GPA is not worth risking a student’s mental health. Whether it’s male or female students, the data of College X displays more female students under high stress than males. However, the data above does not cover if these high stress female students performed the same extent as male students at high stress. For future research, experiments can be done to measure the association between the two gender’s under high stress and performance (measured through GPA). 
+
