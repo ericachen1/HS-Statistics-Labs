@@ -1,0 +1,19 @@
+---
+title: "Lab 2 Write-up"
+author: "YOUR NAME (and YOUR PARTNER'S NAME)"
+output: html_document
+
+---
+
+```{r}
+#Import the data
+spring_2020_lab_2_data <- read.csv("spring_2020_lab_2_data.csv", header = T)
+
+#Attach the data
+attach(spring_2020_lab_2_data)
+```
+
+```{r}
+
+
+```
