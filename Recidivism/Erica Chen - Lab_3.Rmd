@@ -1,0 +1,180 @@
+---
+title: "Lab 3: Randomization Testing and Recidivism Risk"
+author: Erica Chen
+output: html_document
+date: 8 May 2020
+---
+
+<!-- WARNING: This file must be in the same folder with the data and source code to work. DO NOT MODIFY THE CODE CHUNK BELOW OR CHANGE ANY FILENAMES-->
+
+```{r, echo=FALSE, message=FALSE}
+#Source the source code
+source("spring_2020_lab_3_source_code.R")
+#Import the data
+spring_2020_lab_3_data <- read.csv("spring_2020_lab_3_data.csv", header = T)
+#Attach the data
+attach(spring_2020_lab_3_data)
+```
+
+<!-- Continue your lab below. DON'T FORGET: before each use of the sample or randomization.test command, add set.seed() with some number of your choice in the parentheses.-->
+
+--- 
+
+Exercise 1: Race and Score Number
+
+```{r}
+compareMeans(score_num,race)
+
+boxplot(score_num~race, xlab= "Race of Perpetrator" , ylab= "Recidivism Score" , main= "Recidivism Based on Race")
+
+```
+
+According to side by side box and whisker plot above,  African-American has an average recidivism score of 5.28 and Caucasian  has a score of 3.64 with a difference of 1.64. Though populations have perpetrators at the minimum and maximum points, the African American population is more concentrated around higher recidivism scores. 
+
+```{r}
+
+set.seed(1010)
+randomization.test(score_num,race,num=10000)
+
+```
+
+To test the null hypothesis, we ran 10,000 random simulations and calculated the p-value to be 0% - a probability significant enough to be able to reject the null hypothesis and favor the alternative, which is H1: μ_A /= μ_C.  We can conclude that there is, in fact, an association between race and recidivism score. 
+
+---
+
+Exercise 2: Race and Severity of the Crime
+
+``` {r}
+
+compareProportions(degree,race)
+ 
+plot(table(degree,race), ylab= "Race of Perpetrator" , xlab= "Severity of Crime", main= "Degree of Crime Based on Race" )
+
+```
+
+
+The two way table above compares two proportions, with the observed difference in proportion to be 0.1. The null hypothesis tests that the proportions are equal, H0: P_a = P_c. We can observe that African American committing felonies is the greatest population recorded followed by Caucaians committing felonies. 
+
+
+```{r}
+
+
+set.seed (2020)
+randomization.test(degree, race, num=10000)
+
+```
+
+According to the histogram above, the p-value calculated after 10,000 random samples shows a probability of 0%. The null hypothesis is rejected. Therefore, we favor the alternative hypothesis showing that there is an association between race and degree of crime. The histogram displays a bell shaped distribution with an almost slanted unimodal peak. 
+
+---
+
+Exercise 3a: Sex and COMPAS Score
+
+``` {r}
+compareMeans(score_num, sex)
+ 
+boxplot(score_num~sex, ylab= "COMPAS Scorer" , xlab= "Sex of Preprotretor" , main= "COMPAS Score Based on Sex")
+```
+
+
+According to the preliminary data displayed,  females have an average COMPAS score of 4.24 and males have an average score of 4.71 with a difference of -0.47. The null hypothesis states that there would be no difference in the two means, while the alternative hypothesis supports that after numerous random simulations, the means will still not be the same, H1: μ_M /= μ_F. The side to side box and whisker plot shows that the means of the male and female population are alighned with one another. However, the male population records a greater third quartile for the COMPAS score. 
+
+
+
+```{r}
+
+
+set.seed (3030)
+randomization.test(score_num, sex, num=10000)
+
+```
+
+To test the null hypothesis, we ran 10,000 random samples and calculated a p-value of 0%- a probability significant enough to reject the null hypothesis to favor the alternative. We can conclude that there is an association between sex and COMPAS score. 
+
+---
+
+Exercise 3b: Subset with No Prior Convictions 
+
+```{r}
+no.prior <-subset (spring_2020_lab_3_data, priors_count==0)
+
+plot(no.prior$score_num~no.prior$sex, main= "Score Number Based on Sex for No Prior Counts", xlab= "Sex", ylab="Score Number")
+
+```
+
+
+The side by side box and whisker plot above displays data sets almost identical to one another. The means for male and female population are aligned around 3.0, with only -0.22 difference. 
+
+
+```{r}
+set.seed(30311)
+randomization.test(no.prior$score_num, no.prior$sex, num=10000)
+
+```
+
+After running 10,000 random samples again but on a subset within the no prior counts population, we received totally different results. The histogram presents a neatly centered bell shaped distribution with a calculated probability of 0.44. The p-value can be considered statistically significant, so we can favor the null hypothesis.  This shows that within a population of no prior counts, sex and score number are not dependent on one another. 
+
+---
+
+Exercise 3c: Summary 
+
+The difference in mean displayed in preliminary calculations can describe how far apart the means are from each other. So the smaller the difference, the closer the means are to being equal and supporting the null hypothesis. We can conclude that 0.44 is not a statistically significant number, so we reject the alternative hypothesis because the means are not too different to be considered significant. 
+
+---
+
+Exercise 4a: Hypothesis Testing Two Means
+
+```{r}
+compareMeans(priors_count,degree)
+
+```
+My research question is to determine if there is a difference between felony based on prior counts and between misdemeanor based on prior counts. 
+
+```{r}
+
+boxplot(priors_count~degree, main= "Prior Counts of Crime Based on Degree" , xlab= "Degree" , ylab= "Prior Counts" )
+
+```
+
+According to the preliminary calculations above, the difference in means between felony and misdemeanor is 1.37.  Moreover, the boxplot displays a visual describing the mean of prior counts for felony as 3.94 and the mean of misdemeanor as 2.57. The null hypothesis is that there is no difference in population mean for felony and misdemeanor, H0: μ f = μ m, while the alternative hypothesis supposets that there is a significantly large difference in the means, H1: μ f /= μ m. 
+
+```{r}
+set.seed(100)
+
+randomization.test(priors_count, degree, num=10000)
+
+```
+
+
+After analyzing the histogram, we can conclude that the smaller tail (to the right) has a probability of zero, making the p-value statistically significant and rejecting the null hypothesis to claim that there is an association between degree of the crime and prior counts committed by the perpetrator. 
+
+---
+
+Exercise 4b: Hypothesis Testing Subsets
+```{r}
+male <-subset(spring_2020_lab_3_data, sex== "Male")
+
+plot(male$priors_count~male$degree, main= "Degree of Crime Based on Prior Counts for Males", ylab= "Prior Counts", xlab= "Degree of Crime")
+```
+
+The male specific boxplot above presents a similar pattern to the original data, except within the male subset, misdemeanors were less spread out across a range with less males of multiple prior counts conducting misdemeanor. The preliminary data calculated supports this observation as the male population mean had a difference of 1.261, which was less than the observed difference for the general population, 1.371. This shows how the popluation numbers have condensed since the population has condensed, as well. 
+
+
+```{r}
+
+set.seed(4040)
+randomization.test(male$priors_count, male$degree, num=10000)
+
+```
+
+After simulating 10,000 random samples specific to the male population, we can conclude that the data is statistically significant therefore rejecting the null hypothesis again. The histogram above represents a neatly centered normal distribution. 
+
+---
+
+Exercise 5: Summary  
+
+My intention is to measure the association between two means using the variables “Degree” and “Prior Counts.” I found it interesting that perpetrators who committed felonies had a greater number of counts for commiting prior crimes. The data also shows a wider range of  perpetrators committing felonies than misdemeanor, where the number of perpetrators hat committed misdemeanor had similar criminal history (fewer prior counts).
+
+I am curious to test if there is an association between degree of crime and prior counts of crime between various countries around the world based of system of governing: democratic countries versus communist countries. For a previous lab report, we observed the happy life years between countries around the world, and I was surprised to find many communists countries were higher up on the HLY scale, even higher than the U.S. I would hypothesize that there is an association between these two variables: if more citizens live a happier lifestyle this could impact the recorded crime activity. 
+
+---
